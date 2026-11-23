@@ -1,0 +1,38 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>S02 Judd, Ehinger, Durand & Torralba (2009)</title>
+<style>
+body{font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;background:#F5F1EA;color:#1E1C1A;margin:0}
+.wrap{max-width:820px;margin:0 auto;padding:36px 28px 80px}
+nav{font-size:14px;margin-bottom:26px;display:flex;gap:16px;flex-wrap:wrap}
+nav a{color:#1F4E5A}
+h1{font-size:32px;line-height:1.3;border-bottom:3px solid #E4572E;padding-bottom:10px}
+h2{font-size:22px;margin-top:34px;color:#1F4E5A}
+p,li{font-size:17px;line-height:1.75}
+a{color:#1F4E5A}
+blockquote{margin:18px 0;padding:12px 18px;background:#FFF7E6;border-left:5px solid #E9B44C;border-radius:0 8px 8px 0}
+blockquote p{margin:0}
+code{background:#EEE7DC;padding:1px 5px;border-radius:4px}
+table{border-collapse:collapse;width:100%}th,td{border:1px solid #DDD5C9;padding:6px 10px;text-align:left}
+.tag{display:inline-block;font-size:12px;font-weight:700;background:#1F4E5A;color:#fff;border-radius:99px;padding:0 8px;margin:0 2px;text-decoration:none}
+</style></head><body><div class="wrap">
+<nav><a href="../index.html">← 作業首頁</a><a href="../wiki/index.html">Wiki 目錄</a>
+<a href="../slides/index.html">教學簡報</a><a href="../wiki/log.html">操作紀錄</a></nav>
+<h1>S02 Judd, Ehinger, Durand &amp; Torralba (2009)</h1>
+<ul>
+<li>書目：Judd, T., Ehinger, K., Durand, F., &amp; Torralba, A. (2009). Learning to Predict Where Humans Look. <em>IEEE 12th International Conference on Computer Vision (ICCV)</em>, 2106–2113.</li>
+<li>網址：https://people.csail.mit.edu/tjudd/WherePeopleLook/index.html</li>
+<li>取得方式：專案頁、論文 PDF、ICCV 海報</li>
+<li>取得日期：2026-11-23</li>
+</ul>
+<h2>摘要層級重點（自己的話）</h2>
+<ul>
+<li>動機：設計、圖學、人機互動都需要知道人會看哪裡；眼動儀貴又麻煩時，可以用顯著性模型來預測注視位置。</li>
+<li>他們發現既有的 bottom-up 模型常常猜錯：例如模型選了畫面裡的亮光點，但人其實在看畫面中的人；模型選了強烈的邊緣，但人在看文字。</li>
+<li>貢獻一：建立公開的大型眼動資料庫（MIT 資料集），記錄人在圖片上真正看哪裡。</li>
+<li>貢獻二：用監督式學習訓練顯著性模型，同時放入低階特徵（亮度、顏色、方向）和高階特徵（地平線位置、距離畫面中心的距離、有沒有臉／人／車）。</li>
+<li>「距離畫面中心」被當成特徵，反映人看圖有偏向中央的傾向（中央偏誤，center bias）。</li>
+</ul>
+<h2>可驗證數字</h2>
+<ul>
+<li>年份：2009</li>
+</ul></div></body></html>

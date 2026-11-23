@@ -1,0 +1,299 @@
+{
+ "title": "一張 KV，觀眾先看哪裡？—— 廣告視覺注意力入門",
+ "audience": "廣告系同學，不懂眼動研究、不懂電腦視覺",
+ "slides": [
+  {
+   "id": 1,
+   "title": "封面",
+   "wiki": [
+    "index.md"
+   ],
+   "introduces": [],
+   "uses": [],
+   "facts": []
+  },
+  {
+   "id": 2,
+   "title": "先玩一下：你第一眼看哪？",
+   "wiki": [
+    "concepts/visual-attention.md"
+   ],
+   "introduces": [],
+   "uses": [],
+   "facts": []
+  },
+  {
+   "id": 3,
+   "title": "今天要回答的三個問題",
+   "wiki": [
+    "index.md",
+    "discussion.md"
+   ],
+   "introduces": [],
+   "uses": [],
+   "facts": []
+  },
+  {
+   "id": 4,
+   "title": "視覺注意力：兩股力量",
+   "wiki": [
+    "concepts/visual-attention.md"
+   ],
+   "introduces": [
+    "視覺注意力",
+    "bottom-up",
+    "top-down"
+   ],
+   "uses": [],
+   "facts": []
+  },
+  {
+   "id": 5,
+   "title": "怎麼知道人在看哪？眼動追蹤",
+   "wiki": [
+    "concepts/eye-tracking.md"
+   ],
+   "introduces": [
+    "眼動追蹤",
+    "注視"
+   ],
+   "uses": [
+    "視覺注意力"
+   ],
+   "facts": [
+    "1363 則",
+    "3600 位"
+   ]
+  },
+  {
+   "id": 6,
+   "title": "廣告三元素：各有各的強項",
+   "wiki": [
+    "concepts/ad-elements.md",
+    "sources/S05.md"
+   ],
+   "introduces": [
+    "廣告三元素"
+   ],
+   "uses": [
+    "注視",
+    "眼動追蹤"
+   ],
+   "facts": [
+    "1363 則",
+    "3600 位"
+   ]
+  },
+  {
+   "id": 7,
+   "title": "被看到 ≠ 被記住",
+   "wiki": [
+    "concepts/attention-to-memory.md",
+    "sources/S04.md"
+   ],
+   "introduces": [],
+   "uses": [
+    "注視",
+    "廣告三元素"
+   ],
+   "facts": []
+  },
+  {
+   "id": 8,
+   "title": "100 毫秒的一眼：Ad Gist",
+   "wiki": [
+    "concepts/ad-gist.md",
+    "sources/S06.md"
+   ],
+   "introduces": [
+    "gist"
+   ],
+   "uses": [
+    "注視"
+   ],
+   "facts": [
+    "1 次",
+    "100 毫秒"
+   ]
+  },
+  {
+   "id": 9,
+   "title": "電腦怎麼猜：顯著圖",
+   "wiki": [
+    "concepts/saliency-map.md",
+    "sources/S01.md"
+   ],
+   "introduces": [
+    "顯著圖"
+   ],
+   "uses": [
+    "bottom-up"
+   ],
+   "facts": [
+    "3 種"
+   ]
+  },
+  {
+   "id": 10,
+   "title": "三代模型：越來越像人",
+   "wiki": [
+    "concepts/saliency-prediction-models.md",
+    "concepts/transfer-learning.md",
+    "sources/S02.md",
+    "sources/S03.md"
+   ],
+   "introduces": [
+    "遷移學習"
+   ],
+   "uses": [
+    "顯著圖",
+    "眼動追蹤",
+    "top-down"
+   ],
+   "facts": []
+  },
+  {
+   "id": 11,
+   "title": "小心中央偏誤：怎麼幫模型打分數",
+   "wiki": [
+    "concepts/center-bias.md",
+    "sources/S03.md"
+   ],
+   "introduces": [
+    "中央偏誤",
+    "AUC"
+   ],
+   "uses": [
+    "顯著圖"
+   ],
+   "facts": [
+    "300 張",
+    "40 位",
+    "67.90%",
+    "71.69%",
+    "77%",
+    "84.40%",
+    "88%"
+   ]
+  },
+  {
+   "id": 12,
+   "title": "設計稿不是照片：視覺重要性",
+   "wiki": [
+    "concepts/visual-importance.md",
+    "sources/S07.md"
+   ],
+   "introduces": [
+    "視覺重要性"
+   ],
+   "uses": [
+    "顯著圖"
+   ],
+   "facts": [
+    "1K 張",
+    "1.4K 張"
+   ]
+  },
+  {
+   "id": 13,
+   "title": "回到開頭那張 KV",
+   "wiki": [
+    "concepts/saliency-map.md",
+    "concepts/ad-elements.md",
+    "concepts/center-bias.md"
+   ],
+   "introduces": [],
+   "uses": [
+    "顯著圖",
+    "廣告三元素",
+    "中央偏誤"
+   ],
+   "facts": []
+  },
+  {
+   "id": 14,
+   "title": "KV 前測五問",
+   "wiki": [
+    "synthesis/kv-pretest-checklist.md"
+   ],
+   "introduces": [],
+   "uses": [
+    "gist",
+    "廣告三元素",
+    "中央偏誤",
+    "注視",
+    "顯著圖",
+    "視覺重要性"
+   ],
+   "facts": []
+  },
+  {
+   "id": 15,
+   "title": "熱圖不是萬能",
+   "wiki": [
+    "synthesis/limitations.md"
+   ],
+   "introduces": [],
+   "uses": [
+    "顯著圖",
+    "bottom-up",
+    "中央偏誤",
+    "AUC"
+   ],
+   "facts": []
+  },
+  {
+   "id": 16,
+   "title": "小測驗",
+   "wiki": [
+    "concepts/ad-elements.md",
+    "concepts/ad-gist.md",
+    "concepts/center-bias.md"
+   ],
+   "introduces": [],
+   "uses": [
+    "廣告三元素",
+    "gist",
+    "中央偏誤"
+   ],
+   "facts": [
+    "100 毫秒"
+   ]
+  },
+  {
+   "id": 17,
+   "title": "重點回顧",
+   "wiki": [
+    "index.md"
+   ],
+   "introduces": [],
+   "uses": [
+    "bottom-up",
+    "top-down",
+    "注視",
+    "顯著圖",
+    "遷移學習",
+    "gist"
+   ],
+   "facts": []
+  },
+  {
+   "id": 18,
+   "title": "參考來源",
+   "wiki": [
+    "index.md",
+    "sources/S01.md",
+    "sources/S02.md",
+    "sources/S03.md",
+    "sources/S04.md",
+    "sources/S05.md",
+    "sources/S06.md",
+    "sources/S07.md"
+   ],
+   "introduces": [],
+   "uses": [],
+   "facts": []
+  }
+ ],
+ "note": "facts = 這張投影片會出現的數字＋單位，生成 HTML 之前先檢查它們都在引用的 wiki 頁裡（workflow v2 新增）"
+}

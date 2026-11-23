@@ -1,0 +1,46 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>S03 Kümmerer et al. — DeepGaze I (2014) & DeepGaze II (2016)</title>
+<style>
+body{font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;background:#F5F1EA;color:#1E1C1A;margin:0}
+.wrap{max-width:820px;margin:0 auto;padding:36px 28px 80px}
+nav{font-size:14px;margin-bottom:26px;display:flex;gap:16px;flex-wrap:wrap}
+nav a{color:#1F4E5A}
+h1{font-size:32px;line-height:1.3;border-bottom:3px solid #E4572E;padding-bottom:10px}
+h2{font-size:22px;margin-top:34px;color:#1F4E5A}
+p,li{font-size:17px;line-height:1.75}
+a{color:#1F4E5A}
+blockquote{margin:18px 0;padding:12px 18px;background:#FFF7E6;border-left:5px solid #E9B44C;border-radius:0 8px 8px 0}
+blockquote p{margin:0}
+code{background:#EEE7DC;padding:1px 5px;border-radius:4px}
+table{border-collapse:collapse;width:100%}th,td{border:1px solid #DDD5C9;padding:6px 10px;text-align:left}
+.tag{display:inline-block;font-size:12px;font-weight:700;background:#1F4E5A;color:#fff;border-radius:99px;padding:0 8px;margin:0 2px;text-decoration:none}
+</style></head><body><div class="wrap">
+<nav><a href="../index.html">← 作業首頁</a><a href="../wiki/index.html">Wiki 目錄</a>
+<a href="../slides/index.html">教學簡報</a><a href="../wiki/log.html">操作紀錄</a></nav>
+<h1>S03 Kümmerer et al. — DeepGaze I (2014) &amp; DeepGaze II (2016)</h1>
+<ul>
+<li>書目 1：Kümmerer, M., Theis, L., &amp; Bethge, M. (2014). Deep Gaze I: Boosting Saliency Prediction with Feature Maps Trained on ImageNet. arXiv:1411.1045.</li>
+<li>書目 2：Kümmerer, M., Wallis, T. S. A., &amp; Bethge, M. (2016). DeepGaze II: Reading fixations from deep features trained on object recognition. arXiv:1610.01563.</li>
+<li>補充：Kümmerer et al. (2017). Understanding Low- and High-Level Contributions to Fixation Prediction. ICCV 2017.</li>
+<li>網址：https://arxiv.org/abs/1411.1045 ；https://arxiv.org/abs/1610.01563 ；https://openaccess.thecvf.com/content_ICCV_2017/papers/Kummerer_Understanding_Low-_and_ICCV_2017_paper.pdf</li>
+<li>取得日期：2026-11-23</li>
+</ul>
+<h2>摘要層級重點（自己的話）</h2>
+<ul>
+<li>2014 年起，深度神經網路讓顯著性預測（saliency prediction）大幅進步。</li>
+<li>問題：眼動資料集很小（幾千張圖），從零訓練深度網路不夠。</li>
+<li>解法：遷移學習（transfer learning）。DeepGaze I 拿在 ImageNet 物體辨識上預訓練好的 AlexNet 特徵，再學一層讀出（readout）來預測注視。</li>
+<li>DeepGaze II 改用 VGG 特徵，而且不微調 VGG，只在上面訓練幾層讀出層，所以是很強的遷移學習測試。</li>
+<li>評估用 MIT Saliency Benchmark（MIT300）：300 張圖、40 位受試者，注視資料不公開，避免模型偷看答案。</li>
+<li>常見指標：AUC（含中央偏誤）與 shuffled AUC（扣掉中央偏誤）。</li>
+<li>DeepGaze I 投稿時：shuffled AUC 71.69%（當時最好的 AWS 是 67.90%），AUC 84.40%。</li>
+<li>2017 ICCV 論文報告 DeepGaze II 在 MIT300 上 AUC 88%、sAUC 77%，當時為頂尖。</li>
+<li>啟示：在物體辨識上學到的高階特徵，對預測人會看哪裡很有用。</li>
+</ul>
+<h2>可驗證數字</h2>
+<ul>
+<li>300 張圖、40 位受試者（MIT300）</li>
+<li>DeepGaze I：sAUC 71.69%，對照 AWS 67.90%；AUC 84.40%</li>
+<li>DeepGaze II：AUC 88%、sAUC 77%</li>
+<li>年份：2014、2016、2017</li>
+</ul></div></body></html>

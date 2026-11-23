@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>一張 KV，觀眾先看哪裡？— 廣告視覺注意力入門</title>
+<style>
+  :root{
+    --bg:#F5F1EA; --paper:#FFFDF9; --ink:#1E1C1A; --muted:#6B655E; --line:#DDD5C9;
+    --heat:#E4572E; --heat-soft:#FBE3D9; --teal:#1F4E5A; --teal-soft:#DCE9EA; --gold:#E9B44C;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:#2A2724;overflow:hidden}
+  body{font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Noto Sans CJK TC",sans-serif;color:var(--ink)}
+  #viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+  #stage{width:1280px;height:720px;position:relative;transform-origin:center center}
+  .slide{position:absolute;inset:0;background:var(--bg);padding:64px 80px 70px;display:none;flex-direction:column;overflow:hidden}
+  .slide.active{display:flex}
+  .kicker{font-size:15px;letter-spacing:.18em;color:var(--heat);font-weight:700;margin-bottom:14px}
+  h1{font-size:64px;line-height:1.15;font-weight:900;letter-spacing:-.01em}
+  h2{font-size:42px;line-height:1.2;font-weight:900;margin-bottom:28px}
+  h3{font-size:24px;font-weight:800;margin-bottom:10px}
+  p,li{font-size:22px;line-height:1.6}
+  .muted{color:var(--muted)}
+  .em{color:var(--heat);font-weight:800}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:start}
+  .cols3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:26px 28px}
+  .card.teal{background:var(--teal-soft);border-color:#BFD5D7}
+  .card.heat{background:var(--heat-soft);border-color:#F3C3B0}
+  .card p,.card li{font-size:19px}
+  ul.clean{list-style:none}
+  ul.clean li{padding-left:28px;position:relative;margin-bottom:10px}
+  ul.clean li::before{content:"";position:absolute;left:4px;top:.62em;width:10px;height:10px;border-radius:50%;background:var(--heat)}
+  .big-num{font-size:84px;font-weight:900;color:var(--heat);line-height:1}
+  .src{position:absolute;left:80px;right:80px;bottom:22px;font-size:14px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .src b{color:var(--ink);font-weight:700}
+  .src a{color:var(--teal);text-decoration:none;border-bottom:1px dotted var(--teal)}
+  .tag{display:inline-block;font-size:14px;font-weight:700;padding:3px 10px;border-radius:99px;background:var(--teal);color:#fff;margin-right:6px}
+  .tag.heat{background:var(--heat)}
+  .define{border-left:5px solid var(--gold);background:#FFF7E6;padding:14px 20px;border-radius:0 10px 10px 0;font-size:20px;margin-top:auto}
+  .define b{color:#9A6A00}
+  /* title slide */
+  .title-slide{background:var(--teal);color:#fff;justify-content:center}
+  .title-slide h1{color:#fff;font-size:72px}
+  .title-slide .kicker{color:var(--gold)}
+  .title-slide p{color:#CFE0E2}
+  .heat-dots{position:absolute;right:-60px;top:-60px;width:520px;height:520px;border-radius:50%;
+    background:radial-gradient(circle at 50% 50%,rgba(228,87,46,.95) 0%,rgba(233,180,76,.55) 35%,rgba(233,180,76,0) 70%)}
+  /* mock KV */
+  .kv{width:560px;height:440px;border-radius:12px;position:relative;overflow:hidden;background:linear-gradient(160deg,#CFE3D4 0%,#9CC3A8 55%,#5E8F6E 100%);box-shadow:0 18px 40px rgba(0,0,0,.18)}
+  .kv .headline{position:absolute;left:30px;top:30px;font-size:34px;font-weight:900;color:#17321F;line-height:1.25}
+  .kv .sub{position:absolute;left:32px;top:122px;font-size:16px;color:#264A30}
+  .kv .price{position:absolute;left:30px;bottom:30px;background:#17321F;color:#fff;font-size:18px;font-weight:800;padding:8px 16px;border-radius:6px}
+  .kv .logo{position:absolute;right:26px;bottom:26px;font-size:20px;font-weight:900;color:#fff;letter-spacing:.06em;border:2px solid #fff;padding:4px 12px;border-radius:4px}
+  .kv svg{position:absolute;right:40px;top:96px}
+  .heatmap{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .5s;mix-blend-mode:multiply}
+  .heatmap.on{opacity:1}
+  .btn{font:inherit;font-size:18px;font-weight:800;border:0;border-radius:99px;padding:12px 24px;background:var(--heat);color:#fff;cursor:pointer}
+  .btn.ghost{background:transparent;color:var(--teal);border:2px solid var(--teal)}
+  /* timeline */
+  .gen{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;position:relative}
+  .gen .card h3 span{display:block;font-size:15px;color:var(--heat);letter-spacing:.1em;margin-bottom:6px}
+  .arrow{font-size:30px;color:var(--heat);text-align:center}
+  /* quiz */
+  .q{margin-bottom:18px}
+  .q p{font-size:21px;font-weight:700;margin-bottom:8px}
+  .opts{display:flex;gap:10px;flex-wrap:wrap}
+  .opt{font:inherit;font-size:17px;padding:8px 16px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);cursor:pointer}
+  .opt.right{background:#DDF1E3;border-color:#3E9B5C}
+  .opt.wrong{background:#F9DCDC;border-color:#C94C4C}
+  .why{font-size:16px;color:var(--teal);margin-top:6px;min-height:22px}
+  /* nav */
+  #bar{position:fixed;left:0;bottom:0;height:5px;background:var(--heat);transition:width .3s;z-index:5}
+  #nav{position:fixed;right:18px;bottom:14px;display:flex;gap:8px;align-items:center;z-index:5;font-size:14px;color:#6B655E;background:rgba(245,241,234,.85);padding:4px 6px;border-radius:8px}
+  #nav button{background:#3A3633;color:#fff;border:0;border-radius:6px;width:36px;height:32px;font-size:16px;cursor:pointer}
+  .refs li{font-size:17px;margin-bottom:9px;line-height:1.5}
+  .refs a{color:var(--teal)}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage">
+
+<!-- 1 封面 -->
+<section class="slide title-slide" data-wiki="index.md">
+  <div class="heat-dots"></div>
+  <div class="kicker">LLM WIKI 教學簡報 ・ 廣告 × 電腦視覺</div>
+  <h1>一張 KV，<br>觀眾先看哪裡？</h1>
+  <p style="font-size:26px;margin-top:22px">廣告視覺注意力入門：人怎麼看、電腦怎麼猜、我們怎麼用</p>
+  <p style="font-size:18px;margin-top:40px">按 → 或空白鍵翻頁　｜　內容全部來自「廣告 KV 視覺注意力 LLM Wiki」</p>
+  <div class="src" style="color:#CFE0E2;border-color:rgba(255,255,255,.25)"><b style="color:#fff">本頁根據</b><a style="color:#fff" href="../wiki/index.html">Wiki 目錄</a></div>
+</section>
+
+<!-- 2 先玩一下 -->
+<section class="slide" data-wiki="concepts/visual-attention.md">
+  <div class="kicker">暖身</div>
+  <h2>先玩一下：你的眼睛第一個停在哪？</h2>
+  <div class="cols" style="grid-template-columns:560px 1fr;align-items:start">
+    <div class="kv" id="kv1" data-check="skip">
+      <div class="headline">一口，<br>回到山裡的早晨</div>
+      <div class="sub">冷泡烏龍・無糖</div>
+      <svg width="190" height="250" viewBox="0 0 190 250" aria-label="示意人物與瓶子">
+        <circle cx="70" cy="70" r="46" fill="#F2D2B6"/>
+        <path d="M30 60 Q70 0 112 58 L112 46 Q70 -6 26 50Z" fill="#2B2420"/>
+        <circle cx="54" cy="72" r="5" fill="#2B2420"/><circle cx="86" cy="72" r="5" fill="#2B2420"/>
+        <path d="M56 94 Q70 104 84 94" stroke="#B05A3C" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <path d="M8 250 Q14 130 70 128 Q126 130 132 250Z" fill="#F4F1E8"/>
+        <rect x="132" y="120" width="42" height="120" rx="12" fill="#E7F2EA" stroke="#17321F" stroke-width="3"/>
+        <rect x="142" y="104" width="22" height="18" rx="3" fill="#17321F"/>
+        <rect x="136" y="160" width="34" height="34" fill="#9CC3A8"/>
+      </svg>
+      <div class="price">限時 39 元</div>
+      <div class="logo">晨露茶</div>
+    </div>
+    <div>
+      <p>看左邊這張虛構的 KV <b>兩秒</b>，然後閉上眼睛回答：</p>
+      <ul class="clean" style="margin-top:18px">
+        <li>你第一眼看到什麼？</li>
+        <li>它在賣什麼？</li>
+        <li>品牌叫什麼名字？</li>
+      </ul>
+      <p class="muted" style="margin-top:20px;font-size:19px">每個人的答案可能不一樣，但研究發現人看廣告其實有規律。這堂課要解釋這些規律，以及電腦能不能在 KV 上線前先算出來。最後我們會回到這張圖對答案。</p>
+    </div>
+  </div>
+  <div class="src"><b>本頁根據</b><a href="../wiki/concepts/visual-attention.html">視覺注意力</a></div>
+</section>
+
+<!-- 3 三個問題 -->
+<section class="slide" data-wiki="index.md,discussion.md">
+  <div class="kicker">今天的地圖</div>
+  <h2>這堂課只回答三個問題</h2>
+  <div class="cols3" style="margin-top:10px">
+    <div class="card"><div class="big-num" data-check="skip">1</div><h3 style="margin-top:12px">人怎麼看廣告？</h3><p>注意力怎麼分配到品牌、圖像、文字上；被看到之後會不會被記住。</p><p class="muted" style="margin-top:10px;font-size:16px">行銷研究</p></div>
+    <div class="card teal"><div class="big-num" style="color:var(--teal)" data-check="skip">2</div><h3 style="margin-top:12px">電腦怎麼猜？</h3><p>顯著圖是什麼，模型從手刻規則一路走到深度學習。</p><p class="muted" style="margin-top:10px;font-size:16px">電腦視覺</p></div>
+    <div class="card heat"><div class="big-num" data-check="skip">3</div><h3 style="margin-top:12px">我們怎麼用？</h3><p>把兩邊合起來，變成 KV 上線前可以問的五個問題。</p><p class="muted" style="margin-top:10px;font-size:16px">綜合應用</p></div>
+  </div>
+  <div class="src"><b>本頁根據</b><a href="../wiki/index.html">Wiki 目錄</a>・<a href="../wiki/discussion.html">先討論、後生成紀錄</a></div>
+</section>
+
+<!-- 4 視覺注意力 -->
+<section class="slide" data-wiki="concepts/visual-attention.md">
+  <div class="kicker">問題 1 ・ 人怎麼看</div>
+  <h2>視覺注意力：兩股力量在拉你的眼睛</h2>
+  <div class="cols">
+    <div class="card heat">
+      <h3>Bottom-up 由畫面推著走</h3>
+      <p>某個地方的顏色、亮度、方向和周圍不一樣，就會「跳出來」。不管你想找什麼，它都會搶走你的眼睛。</p>
+      <p class="muted" style="margin-top:12px;font-size:17px">例：一片綠中間的橘色價格標</p>
+    </div>
+    <div class="card teal">
+      <h3>Top-down 由你的大腦帶著走</h3>
+      <p>跟你的目的、你懂什麼有關。比較慢，但會讓你去看「有意義」的東西。</p>
+      <p class="muted" style="margin-top:12px;font-size:17px">例：就算不是最亮的地方，人還是會去看畫面裡的人和文字</p>
+    </div>
+  </div>
+  <div class="define"><b>視覺注意力</b>：眼睛一次只能看清楚一小塊，大腦得決定「先看哪裡」，這個挑選就是視覺注意力。</div>
+  <div class="src"><b>本頁根據</b><a href="../wiki/concepts/visual-attention.html">視覺注意力</a></div>
+</section>
+
+<!-- 5 眼動追蹤 -->
+<section class="slide" data-wiki="concepts/eye-tracking.md">
+  <div class="kicker">問題 1 ・ 人怎麼看</div>
+  <h2>怎麼知道人在看哪？眼動追蹤</h2>
+  <div class="cols" style="grid-template-columns:1.2fr 1fr">
+    <div>
+      <ul class="clean">
+        <li>用紅外線眼動儀，讓受試者像平常一樣翻雜誌，同時記錄眼睛停在哪</li>
+        <li>眼睛停下來吸收資訊的那一刻叫做<span class="em">注視（fixation）</span></li>
+        <li>研究會數：品牌、圖像、文字各被注視幾次</li>
+        <li>缺點：儀器貴、施測麻煩 → 所以才需要電腦模型來「猜」</li>
+      </ul>
+    </div>
+    <div class="card" style="text-align:center;align-self:start">
+      <p class="muted" style="font-size:17px">廣告眼動研究可以做到的規模</p>
+      <div class="big-num" style="margin-top:10px">1363</div><p>則平面廣告</p>
+      <div class="big-num" style="margin-top:14px">3600+</div><p>位消費者</p>
+    </div>
+  </div>
+  <div class="define"><b>注視 fixation</b>：眼睛停下來、真的在吸收資訊的時刻。熱圖上越熱的地方，就是越多注視落下的地方。</div>
+  <div class="src"><b>本頁根據</b><a href="../wiki/concepts/eye-tracking.html">眼動追蹤</a></div>
+</section>
+
+<!-- 6 三元素 -->
+<section class="slide" data-wiki="concepts/ad-elements.md,sources/S05.md">
+  <div class="kicker">問題 1 ・ 人怎麼看</div>
+  <h2>廣告三元素：各有各的強項</h2>
+  <div class="cols3">
+    <div class="card heat"><span class="tag heat">圖像</span><h3 style="margin-top:12px">最會「抓」</h3><p>最能抓住注意力，而且<b>跟面積大小無關</b>：放大主視覺不會更搶眼。</p></div>
+    <div class="card"><span class="tag">文字</span><h3 style="margin-top:12px">越大越多</h3><p>吸到的注意力和面積成正比。只有放大文字，整則廣告的總注意力才會淨增加。</p></div>
+    <div class="card teal"><span class="tag" style="background:#3E7F8C">品牌</span><h3 style="margin-top:12px">最會「轉送」</h3><p>最會把視線帶到廣告的其他地方，是整張圖的交通樞紐。</p></div>
+  </div>
+  <p style="margin-top:28px">⚠️ 三個元素<span class="em">會互相搶注意力</span>：放大一個，常常犧牲另外兩個。</p>
+  <p class="muted" style="font-size:18px;margin-top:8px">資料：1363 則雜誌廣告、3600 位以上消費者的眼動紀錄（Pieters &amp; Wedel, 2004）</p>
+  <div class="src"><b>本頁根據</b><a href="../wiki/concepts/ad-elements.html">廣告三元素</a>・<a href="../wiki/sources/S05.html">S05</a></div>
+</section>
+
+<!-- 7 被看到不等於被記住 -->
+<section class="slide" data-wiki="concepts/attention-to-memory.md,sources/S04.md">
+  <div class="kicker">問題 1 ・ 人怎麼看</div>
+  <h2>被看到 ≠ 被記住</h2>
+  <div class="cols" style="grid-template-columns:1fr 1fr;align-items:center">
+    <div>
+      <svg viewBox="0 0 460 260" width="460" height="260" aria-label="注意力到記憶的流程">
+        <rect x="0" y="90" width="120" height="80" rx="12" fill="#FBE3D9" stroke="#E4572E" stroke-width="2"/>
+        <text x="60" y="137" text-anchor="middle" font-size="20" font-weight="800" fill="#1E1C1A">被看到</text>
+        <rect x="170" y="90" width="120" height="80" rx="12" fill="#FFF7E6" stroke="#E9B44C" stroke-width="2"/>
+        <text x="230" y="127" text-anchor="middle" font-size="18" font-weight="800" fill="#1E1C1A">品牌</text>
+        <text x="230" y="150" text-anchor="middle" font-size="18" font-weight="800" fill="#1E1C1A">被注視</text>
+        <rect x="340" y="90" width="120" height="80" rx="12" fill="#DCE9EA" stroke="#1F4E5A" stroke-width="2"/>
+        <text x="400" y="137" text-anchor="middle" font-size="20" font-weight="800" fill="#1E1C1A">被記住</text>
+        <path d="M122 130 L164 130" stroke="#6B655E" stroke-width="3" marker-end="url(#a)"/>
+        <path d="M292 130 L334 130" stroke="#6B655E" stroke-width="3" marker-end="url(#a)"/>
+        <defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#6B655E"/></marker></defs>
+        <text x="230" y="215" text-anchor="middle" font-size="16" fill="#6B655E">中間這一關，很多 KV 會卡住</text>
+      </svg>
+    </div>
+    <div>
+      <ul class="clean">
+        <li>廣告太多的環境裡，注意力是<b>必要條件</b>，但<b>還不夠</b></li>
+        <li>注視落在<span class="em">品牌</span>上（其次是圖像），品牌記憶會更準、更快</li>
+        <li>重要的是被注視的<b>次數</b>，而不是每次看多久</li>
+      </ul>
+    </div>
+  </div>
+  <div class="define"><b>工作上的意思</b>：熱圖最亮的地方如果不是品牌，這張 KV 可能被看了，卻沒被記住。</div>
+  <div class="src"><b>本頁根據</b><a href="../wiki/concepts/attention-to-memory.html">注意力到記憶</a>・<a href="../wiki/sources/S04.html">S04</a></div>
+</section>
+
+<!-- 8 Ad Gist -->
+<section class="slide" data-wiki="concepts/ad-gist.md,sources/S06.md">
+  <div class="kicker">問題 1 ・ 人怎麼看</div>
+  <h2>只有一眼的時間：Ad Gist</h2>
+  <div class="cols" style="grid-template-columns:380px 1fr;align-items:center">
+    <div class="card heat" style="text-align:center">
+      <p class="muted">大多數廣告只拿到</p>
+      <div class="big-num">1 次</div>
+      <p>注視</p>
+      <div class="big-num" style="margin-top:18px;font-size:64px">&lt;100 ms</div>
+      <p>就分得出「這是廣告」</p>
+    </div>
+    <div>
+      <ul class="clean">
+        <li><b>典型</b>的廣告（長得像這個品類）：100 毫秒內就看得出在賣什麼產品</li>
+        <li><b>非典型</b>、很跳的創意：品牌層級稍好，但產品比較難一眼看懂</li>
+        <li>gist 傳得好的廣告，比較能引起立即的興趣</li>
+      </ul>
+      <p style="margin-top:18px" class="em">→ 創意越跳，越要做「一眼測試」</p>
+    </div>
+  </div>
+  <div class="define"><b>Gist（要旨）</b>：只瞄一眼時，腦中留下的「大意」：這是什麼、在賣什麼、誰在賣。</div>
+  <div class="src"><b>本頁根據</b><a href="../wiki/concepts/ad-gist.html">Ad Gist 一眼要旨</a>・<a href="../wiki/sources/S06.html">S06</a></div>
+</section>
+
+<!-- 9 顯著圖 -->
+<section class="slide" data-wiki="concepts/saliency-map.md,sources/S01.md">
+  <div class="kicker">問題 2 ・ 電腦怎麼猜</div>
+  <h2>電腦怎麼猜？先畫一張「顯著圖」</h2>
+  <div class="cols" style="grid-template-columns:1fr 1fr">
+    <div>
+      <p>經典做法（Itti 模型）把 bottom-up 注意力寫成計算步驟：</p>
+      <ol style="margin:14px 0 0 28px">
+        <li>把圖拆成<b>顏色、亮度、方向</b> 3 種特徵</li>
+        <li>算每個位置和周圍差多少</li>
+        <li>合成一張顯著圖：越亮＝越突出</li>
+        <li>先看最亮的點，看過就「抑制」，跳到下一個</li>
+      </ol>
+    </div>
+    <div class="card" style="display:flex;gap:14px;align-items:center;justify-content:center">
+      <div style="width:170px;height:130px;border-radius:8px;background:#9CC3A8;position:relative">
+        <div style="position:absolute;left:70px;top:44px;width:34px;height:34px;background:#E4572E;border-radius:4px"></div>
+      </div>
+      <div style="font-size:30px;color:var(--heat)">→</div>
+      <div style="width:170px;height:130px;border-radius:8px;background:#111;position:relative;overflow:hidden">
+        <div style="position:absolute;left:52px;top:26px;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle,#fff 0%,rgba(255,255,255,.3) 45%,rgba(255,255,255,0) 70%)"></div>
+      </div>
+    </div>
+  </div>
+  <div class="define"><b>顯著圖 saliency map</b>：和原圖一樣大的熱度地圖，越亮的地方代表越容易吸引目光。<span class="muted">限制：它看不懂「意義」，會漏掉臉和文字。</span></div>
+  <div class="src"><b>本頁根據</b><a href="../wiki/concepts/saliency-map.html">顯著圖</a>・<a href="../wiki/sources/S01.html">S01</a></div>
+</section>
+
+<!-- 10 三代模型 -->
+<section class="slide" data-wiki="concepts/saliency-prediction-models.md,concepts/transfer-learning.md,sources/S02.md,sources/S03.md">
+  <div class="kicker">問題 2 ・ 電腦怎麼猜</div>
+  <h2>三代模型：越來越像人</h2>
+  <div class="gen">
+    <div class="card"><h3><span>第一代 ・ 1998</span>手刻規則</h3><p>Itti 模型：只用顏色、亮度、方向。純 bottom-up，會被亮光點、強邊緣騙走。</p></div>
+    <div class="card teal"><h3><span>第二代 ・ 2009</span>從眼動資料學</h3><p>Judd 模型：用真人眼動資料訓練，加入<b>臉、人、文字、離中心多遠</b>等高階特徵，開始有 top-down 的味道。</p></div>
+    <div class="card heat"><h3><span>第三代 ・ 2014 起</span>深度學習</h3><p>DeepGaze：借用 ImageNet 上學會「認東西」的網路特徵，表現大幅超越前兩代。</p></div>
+  </div>
+  <div class="define" style="margin-top:30px"><b>遷移學習 transfer learning</b>：眼動資料通常只有幾千張圖，不夠從零訓練。所以先讓網路在大資料上學會認東西，再拿學到的特徵來預測注視，只訓練最後幾層。</div>
+  <div class="src"><b>本頁根據</b><a href="../wiki/concepts/saliency-prediction-models.html">顯著性模型演進</a>・<a href="../wiki/concepts/transfer-learning.html">遷移學習</a>・<a href="../wiki/sources/S02.html">S02</a>・<a href="../wiki/sources/S03.html">S03</a></div>
+</section>
+
+<!-- 11 中央偏誤 -->
+<section class="slide" data-wiki="concepts/center-bias.md,sources/S03.md">
+  <div class="kicker">問題 2 ・ 電腦怎麼猜</div>
+  <h2>小心中央偏誤：怎麼幫模型打分數</h2>
+  <div class="cols" style="grid-template-columns:1fr 1fr">
+    <div>
+      <p>不管圖片是什麼，人都比較常看<span class="em">畫面中央</span>。所以「一律猜中間」的模型也能拿到不錯的分數。</p>
+      <p style="margin-top:16px">因此評分有兩種：</p>
+      <ul class="clean" style="margin-top:8px">
+        <li><b>AUC</b>：把中央偏誤算進去</li>
+        <li><b>shuffled AUC (sAUC)</b>：扣掉中央偏誤，看模型是不是真的看懂內容</li>
+      </ul>
+    </div>
+    <div class="card">
+      <p class="muted" style="font-size:16px">共同考場 MIT300：300 張圖、40 位受試者，答案不公開</p>
+      <table style="width:100%;margin-top:14px;font-size:19px;border-collapse:collapse">
+        <tr style="border-bottom:1px solid var(--line)"><th style="text-align:left;padding:8px 0">模型</th><th>AUC</th><th>sAUC</th></tr>
+        <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px 0">當時最好的 AWS</td><td style="text-align:center">—</td><td style="text-align:center">67.90%</td></tr>
+        <tr style="border-bottom:1px solid var(--line)"><td style="padding:8px 0">DeepGaze I</td><td style="text-align:center">84.40%</td><td style="text-align:center">71.69%</td></tr>
+        <tr><td style="padding:8px 0">DeepGaze II</td><td style="text-align:center">88%</td><td style="text-align:center">77%</td></tr>
+      </table>
+      <p class="muted" style="font-size:15px;margin-top:10px">同一個模型，扣掉中央偏誤後分數會掉一截</p>
+    </div>
+  </div>
+  <div class="define"><b>中央偏誤 center bias</b>：人看圖天生偏向中央。前測 KV 時，放中間的元素「本來就」比較會被看，不要把功勞全算給創意。</div>
+  <div class="src"><b>本頁根據</b><a href="../wiki/concepts/center-bias.html">中央偏誤</a>・<a href="../wiki/sources/S03.html">S03</a></div>
+</section>
+
+<!-- 12 視覺重要性 -->
+<section class="slide" data-wiki="concepts/visual-importance.md,sources/S07.md">
+  <div class="kicker">問題 2 ・ 電腦怎麼猜</div>
+  <h2>設計稿不是照片：視覺重要性</h2>
+  <div class="cols">
+    <div>
+      <ul class="clean">
+        <li>前面的顯著性模型大多用<b>自然照片</b>訓練</li>
+        <li>但 KV 是<b>設計稿</b>：字體、顏色、排版都是刻意安排的</li>
+        <li>Bylinskii 等人用約 1K 張設計稿的人工標註、約 1.4K 張圖表的點擊資料，訓練專門的模型</li>
+      </ul>
+    </div>
+    <div class="card teal">
+      <h3>可以拿來做什麼</h3>
+      <ul class="clean">
+        <li>自動改尺寸（橫式 KV → 直式限動）</li>
+        <li>自動做縮圖</li>
+        <li>在設計軟體裡即時顯示「現在哪裡最搶眼」</li>
+      </ul>
+    </div>
+  </div>
+  <div class="define"><b>視覺重要性 visual importance</b>：不是預測照片裡人看哪，而是預測一張設計稿裡哪個元素最被當成重點。這是最接近「KV 前測工具」的研究方向。</div>
+  <div class="src"><b>本頁根據</b><a href="../wiki/concepts/visual-importance.html">視覺重要性</a>・<a href="../wiki/sources/S07.html">S07</a></div>
+</section>
+
+<!-- 13 回到 KV -->
+<section class="slide" data-wiki="concepts/saliency-map.md,concepts/ad-elements.md,concepts/center-bias.md">
+  <div class="kicker">把兩邊接起來</div>
+  <h2>回到開頭那張 KV</h2>
+  <div class="cols" style="grid-template-columns:560px 1fr;align-items:start">
+    <div class="kv" id="kv2" data-check="skip">
+      <div class="headline">一口，<br>回到山裡的早晨</div>
+      <div class="sub">冷泡烏龍・無糖</div>
+      <svg width="190" height="250" viewBox="0 0 190 250" aria-hidden="true">
+        <circle cx="70" cy="70" r="46" fill="#F2D2B6"/>
+        <path d="M30 60 Q70 0 112 58 L112 46 Q70 -6 26 50Z" fill="#2B2420"/>
+        <circle cx="54" cy="72" r="5" fill="#2B2420"/><circle cx="86" cy="72" r="5" fill="#2B2420"/>
+        <path d="M56 94 Q70 104 84 94" stroke="#B05A3C" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <path d="M8 250 Q14 130 70 128 Q126 130 132 250Z" fill="#F4F1E8"/>
+        <rect x="132" y="120" width="42" height="120" rx="12" fill="#E7F2EA" stroke="#17321F" stroke-width="3"/>
+        <rect x="142" y="104" width="22" height="18" rx="3" fill="#17321F"/>
+        <rect x="136" y="160" width="34" height="34" fill="#9CC3A8"/>
+      </svg>
+      <div class="price">限時 39 元</div>
+      <div class="logo">晨露茶</div>
+      <div class="heatmap" id="hm" style="background:
+        radial-gradient(circle at 76% 37%, rgba(228,87,46,.85) 0 40px, rgba(233,180,76,.55) 75px, rgba(233,180,76,0) 120px),
+        radial-gradient(ellipse 150px 80px at 26% 20%, rgba(228,87,46,.7) 0, rgba(233,180,76,.45) 60%, rgba(233,180,76,0) 100%),
+        radial-gradient(circle at 50% 50%, rgba(233,180,76,.35) 0, rgba(233,180,76,0) 160px),
+        radial-gradient(circle at 15% 90%, rgba(233,180,76,.45) 0, rgba(233,180,76,0) 60px)"></div>
+    </div>
+    <div>
+      <button class="btn" onclick="document.getElementById('hm').classList.toggle('on')">開／關 示意熱圖</button>
+      <ul class="clean" style="margin-top:20px">
+        <li><b>人臉</b>和<b>標題</b>最熱：模型學過的高階特徵</li>
+        <li>橘色價格標有一點熱：bottom-up 的顏色對比</li>
+        <li>中間偏熱：中央偏誤</li>
+        <li><span class="em">品牌幾乎是冷的</span> → 被看了，但可能沒被記住</li>
+      </ul>
+      <p class="muted" style="font-size:15px;margin-top:14px">＊這張是依 Wiki 裡的研究結論手畫的示意熱圖，不是真的模型輸出。</p>
+    </div>
+  </div>
+  <div class="src"><b>本頁根據</b><a href="../wiki/concepts/saliency-map.html">顯著圖</a>・<a href="../wiki/concepts/ad-elements.html">廣告三元素</a>・<a href="../wiki/concepts/center-bias.html">中央偏誤</a></div>
+</section>
+
+<!-- 14 前測五問 -->
+<section class="slide" data-wiki="synthesis/kv-pretest-checklist.md">
+  <div class="kicker">問題 3 ・ 我們怎麼用</div>
+  <h2>KV 上線前，問這五個問題</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 30px">
+    <div class="card"><h3>① 一眼測試</h3><p>只看一瞬間，看得出產品和品牌嗎？（gist）</p></div>
+    <div class="card"><h3>② 品牌有被看到嗎</h3><p>熱圖上品牌有沒有被注視？被注視才會被記住。</p></div>
+    <div class="card"><h3>③ 主視覺在幫忙還是在搶</h3><p>圖像本來就會抓注意力，不用靠放大。</p></div>
+    <div class="card"><h3>④ 視線有沒有被帶走</h3><p>品牌要能把視線轉送到文案與行動資訊。</p></div>
+    <div class="card" style="grid-column:span 2"><h3>⑤ 熱點是因為創意，還是因為位置</h3><p>扣掉中央偏誤再判斷。工具：有預算用眼動儀；沒預算用顯著圖模型；設計稿最好用視覺重要性模型。</p></div>
+  </div>
+  <div class="src"><b>本頁根據</b><a href="../wiki/synthesis/kv-pretest-checklist.html">KV 前測檢查表</a></div>
+</section>
+
+<!-- 15 限制 -->
+<section class="slide" data-wiki="synthesis/limitations.md">
+  <div class="kicker">問題 3 ・ 我們怎麼用</div>
+  <h2>熱圖很好用，但它不是答案</h2>
+  <ul class="clean" style="margin-top:6px">
+    <li><b>被看到不等於被記住</b>：注意力只是必要條件</li>
+    <li><b>純 bottom-up 模型看不懂意義</b>：會被亮點、強邊緣騙走</li>
+    <li><b>照片 ≠ 設計稿</b>：用照片訓練的顯著圖不完全適用於 KV</li>
+    <li><b>看清楚分數</b>：有沒有扣掉中央偏誤，差很多（AUC vs sAUC）</li>
+    <li><b>研究多半是雜誌廣告</b>：社群、手機直式版面還要再驗證</li>
+  </ul>
+  <div class="define">下一步：這個 Wiki 會繼續 ingest 社群貼文與手機版面的眼動研究。</div>
+  <div class="src"><b>本頁根據</b><a href="../wiki/synthesis/limitations.html">限制與還沒解決的問題</a></div>
+</section>
+
+<!-- 16 小測驗 -->
+<section class="slide" data-wiki="concepts/ad-elements.md,concepts/ad-gist.md,concepts/center-bias.md">
+  <div class="kicker">檢查一下</div>
+  <h2>小測驗（點選答案）</h2>
+  <div class="q" data-answer="c" data-why="只有放大文字，整則廣告的總注意力才會淨增加；圖像不管大小都很會抓注意力。">
+    <p><span data-check="skip">1.</span> 想讓整張 KV 得到更多注意力，研究建議放大哪個元素？</p>
+    <div class="opts"><button class="opt" data-k="a">主視覺圖像</button><button class="opt" data-k="b">品牌 logo</button><button class="opt" data-k="c">文字</button></div>
+    <div class="why"></div>
+  </div>
+  <div class="q" data-answer="a" data-why="典型的廣告在 100 毫秒內就能讓人看出在賣什麼產品。">
+    <p><span data-check="skip">2.</span> 一則「典型」的廣告，大概多久能讓人看出在賣什麼？</p>
+    <div class="opts"><button class="opt" data-k="a">大約 100 毫秒</button><button class="opt" data-k="b">要讀完標題才知道</button><button class="opt" data-k="c">要看到品牌 logo 才知道</button></div>
+    <div class="why"></div>
+  </div>
+  <div class="q" data-answer="b" data-why="中央偏誤：人看圖天生偏向中央。sAUC 就是扣掉這個效果的分數。">
+    <p><span data-check="skip">3.</span> 一個模型「全部猜畫面中間」也能拿到不錯的 AUC，這是因為？</p>
+    <div class="opts"><button class="opt" data-k="a">模型很聰明</button><button class="opt" data-k="b">中央偏誤</button><button class="opt" data-k="c">遷移學習</button></div>
+    <div class="why"></div>
+  </div>
+  <div class="src"><b>本頁根據</b><a href="../wiki/concepts/ad-elements.html">廣告三元素</a>・<a href="../wiki/concepts/ad-gist.html">Ad Gist</a>・<a href="../wiki/concepts/center-bias.html">中央偏誤</a></div>
+</section>
+
+<!-- 17 回顧 -->
+<section class="slide" data-wiki="index.md">
+  <div class="kicker">重點回顧</div>
+  <h2>帶走這五句話</h2>
+  <ul class="clean" style="font-size:24px">
+    <li>注意力有兩股力量：畫面推的 <b>bottom-up</b>、大腦帶的 <b>top-down</b></li>
+    <li>廣告只有<b>一眼</b>：gist 要在一瞬間傳出去</li>
+    <li>圖像負責抓、文字越大越多、品牌負責轉送；但<b>品牌被注視</b>才會被記住</li>
+    <li>電腦用<b>顯著圖</b>猜人看哪，靠<b>遷移學習</b>從手刻規則進化到深度學習</li>
+    <li>熱圖是<b>前測的起點</b>，不是答案：記得扣掉中央偏誤、記得問「品牌有沒有被看到」</li>
+  </ul>
+  <div class="src"><b>本頁根據</b><a href="../wiki/index.html">Wiki 目錄</a></div>
+</section>
+
+<!-- 18 參考來源 -->
+<section class="slide" data-wiki="index.md,sources/S01.md,sources/S02.md,sources/S03.md,sources/S04.md,sources/S05.md,sources/S06.md,sources/S07.md">
+  <div class="kicker">參考來源（Wiki ingest 的 7 篇）</div>
+  <h2 style="margin-bottom:18px">參考來源</h2>
+  <ol class="refs" style="margin-left:24px">
+    <li><a href="../wiki/sources/S01.html">S01</a> Itti, Koch &amp; Niebur (1998). A Model of Saliency-Based Visual Attention for Rapid Scene Analysis. <i>IEEE TPAMI</i>.</li>
+    <li><a href="../wiki/sources/S02.html">S02</a> Judd, Ehinger, Durand &amp; Torralba (2009). Learning to Predict Where Humans Look. <i>ICCV</i>.</li>
+    <li><a href="../wiki/sources/S03.html">S03</a> Kümmerer et al. (2014; 2016). DeepGaze I / DeepGaze II. <i>arXiv</i>.</li>
+    <li><a href="../wiki/sources/S04.html">S04</a> Wedel &amp; Pieters (2000). Eye Fixations on Advertisements and Memory for Brands. <i>Marketing Science</i>.</li>
+    <li><a href="../wiki/sources/S05.html">S05</a> Pieters &amp; Wedel (2004). Attention Capture and Transfer in Advertising. <i>Journal of Marketing</i>.</li>
+    <li><a href="../wiki/sources/S06.html">S06</a> Pieters &amp; Wedel (2012). Ad Gist: Ad Communication in a Single Eye Fixation. <i>Marketing Science</i>.</li>
+    <li><a href="../wiki/sources/S07.html">S07</a> Bylinskii et al. (2017). Learning Visual Importance for Graphic Designs and Data Visualizations. <i>UIST</i>.</li>
+  </ol>
+  <div class="src"><b>本頁根據</b><a href="../wiki/index.html">Wiki 來源頁 S01–S07</a></div>
+</section>
+
+</div></div>
+<div id="bar"></div>
+<div id="nav"><button id="prev" aria-label="上一張">←</button><span id="count"></span><button id="next" aria-label="下一張">→</button></div>
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  let i=0;
+  const fromHash=parseInt((location.hash||'').replace('#',''),10);
+  if(fromHash>=1&&fromHash<=slides.length) i=fromHash-1;
+  function show(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+    document.getElementById('count').textContent=(i+1)+' / '+slides.length;
+    document.getElementById('bar').style.width=((i+1)/slides.length*100)+'%';
+    history.replaceState(null,'','#'+(i+1));
+  }
+  function fit(){
+    const s=Math.min(innerWidth/1280,innerHeight/720);
+    document.getElementById('stage').style.transform='scale('+s+')';
+  }
+  addEventListener('resize',fit);fit();show(i);
+  addEventListener('keydown',e=>{
+    if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();show(i+1)}
+    if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();show(i-1)}
+  });
+  document.getElementById('next').onclick=()=>show(i+1);
+  document.getElementById('prev').onclick=()=>show(i-1);
+  document.querySelectorAll('.q').forEach(q=>{
+    q.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+      const ok=b.dataset.k===q.dataset.answer;
+      q.querySelectorAll('.opt').forEach(x=>x.classList.remove('right','wrong'));
+      b.classList.add(ok?'right':'wrong');
+      q.querySelector('.why').textContent=(ok?'答對！':'再想想：')+q.dataset.why;
+    });
+  });
+</script>
+</body>
+</html>

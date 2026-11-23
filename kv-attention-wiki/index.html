@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>用 LLM Wiki 做教學 HTML 簡報｜廣告 KV 視覺注意力</title>
+<style>
+  :root{--bg:#F5F1EA;--paper:#FFFDF9;--ink:#1E1C1A;--muted:#6B655E;--line:#DDD5C9;--heat:#E4572E;--heat-soft:#FBE3D9;--teal:#1F4E5A;--teal-soft:#DCE9EA;--gold:#E9B44C}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;line-height:1.75}
+  header{background:var(--teal);color:#fff;padding:56px 24px 48px}
+  .wrap{max-width:960px;margin:0 auto;padding:0 24px}
+  header .wrap{padding:0}
+  .kicker{font-size:13px;letter-spacing:.18em;font-weight:700;color:var(--gold)}
+  h1{font-size:40px;line-height:1.25;margin:10px 0 12px}
+  header p{color:#CFE0E2;margin:0;font-size:17px}
+  .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+  .cta a{display:inline-block;padding:12px 22px;border-radius:99px;font-weight:800;text-decoration:none}
+  .cta a.primary{background:var(--heat);color:#fff}
+  .cta a.ghost{border:2px solid #fff;color:#fff}
+  section{padding:40px 0 8px}
+  h2{font-size:26px;margin:0 0 6px}
+  h2 .n{display:inline-block;width:34px;height:34px;line-height:34px;text-align:center;border-radius:50%;background:var(--heat);color:#fff;font-size:18px;margin-right:10px;vertical-align:3px}
+  h3{font-size:19px;margin:22px 0 6px;color:var(--teal)}
+  p,li{font-size:16.5px}
+  a{color:var(--teal)}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin-top:14px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+  table{width:100%;border-collapse:collapse;font-size:15px;background:var(--paper)}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:#EFE8DC}
+  .v2{background:var(--heat-soft);border-radius:4px;padding:0 4px;font-weight:700;color:#A63A17}
+  .graph{overflow-x:auto;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:14px}
+  .muted{color:var(--muted)}
+  footer{padding:40px 0 60px;color:var(--muted);font-size:14px}
+  blockquote{margin:14px 0;padding:12px 18px;background:#FFF7E6;border-left:5px solid var(--gold);border-radius:0 8px 8px 0}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="kicker">LLM WIKI × 教學 HTML 簡報 ・ 作業成果頁</div>
+  <h1>一張 KV，觀眾先看哪裡？<br>廣告 KV 視覺注意力 LLM Wiki</h1>
+  <p>先建一個 LLM Wiki 當知識庫，再讓 AI 只用這個 Wiki 生成教學簡報；中間每一步都有檢查節點。</p>
+  <div class="cta">
+    <a class="primary" href="slides/index.html">▶ 看教學簡報</a>
+    <a class="ghost" href="wiki/index.html">📚 逛 Wiki</a>
+    <a class="ghost" href="docs/run-01.html">🧾 執行紀錄</a>
+  </div>
+</div></header>
+
+<div class="wrap">
+
+<section id="topic">
+  <h2><span class="n">1</span>Wiki 主題與簡介</h2>
+  <p><b>主題：廣告 KV 視覺注意力。</b>一張廣告主視覺出來，人會先看哪裡？為什麼？電腦能不能在上線前先預測？</p>
+  <p>這個 Wiki 把兩條原本分開的研究線接在一起：<b>行銷研究</b>（眼動追蹤下，品牌、圖像、文字怎麼搶注意力、怎麼變成品牌記憶）和<b>電腦視覺</b>（顯著圖模型從手刻規則到深度學習）。最後整理成「KV 前測五問」。選這個主題，是因為它可以直接當我期末「KV 前測系統」專案的文獻基礎。</p>
+  <div class="grid">
+    <div class="card"><b>7 篇來源</b>，一次 ingest 一篇<br><span class="muted">Itti 1998、Judd 2009、DeepGaze、Wedel &amp; Pieters 2000 / 2004 / 2012、Bylinskii 2017</span></div>
+    <div class="card"><b>10 個概念頁 ＋ 2 個綜合頁</b><br><span class="muted">每一條重點都標了來源〔S0x〕，數字都能追回 raw 筆記</span></div>
+    <div class="card"><b>先討論、後生成</b><br><span class="muted">主題、讀者、範圍、ingest 順序先討論定案：<a href="wiki/discussion.html">討論紀錄</a></span></div>
+  </div>
+</section>
+
+<section id="wiki">
+  <h2><span class="n">2</span>LLM Wiki 成果</h2>
+  <p>照 Karpathy 的 LLM Wiki 模式分三層：<b>raw</b>（原始資料筆記，只新增不修改）→ <b>wiki</b>（LLM 維護的頁面）→ <b>schema</b>（<a href="CLAUDE.html">CLAUDE.md</a>，規定 AI 怎麼維護）。</p>
+  <ul>
+    <li><a href="wiki/index.html">Wiki 目錄 index</a>：所有頁面一覽</li>
+    <li><a href="wiki/log.html">操作紀錄 log</a>：每次 ingest / lint / query 動到哪些頁</li>
+    <li>概念頁範例：<a href="wiki/concepts/ad-elements.html">廣告三元素</a>、<a href="wiki/concepts/saliency-map.html">顯著圖</a>、<a href="wiki/concepts/ad-gist.html">Ad Gist</a></li>
+    <li>原始資料範例：<a href="raw/S05-pieters-wedel-2004.html">raw/S05</a>（書目、網址、摘要重點、可驗證數字）</li>
+  </ul>
+</section>
+
+<section id="slides">
+  <h2><span class="n">3</span>教學 HTML 簡報</h2>
+  <p><a href="slides/index.html"><b>一張 KV，觀眾先看哪裡？— 廣告視覺注意力入門</b></a>（18 張，鍵盤 ← → 翻頁）</p>
+  <p>教學結構：<b>暖身</b>（先看一張虛構 KV 自己猜）→ <b>人怎麼看</b>（注意力、眼動、三元素、記憶、一眼 gist）→ <b>電腦怎麼猜</b>（顯著圖、三代模型、中央偏誤、設計稿的視覺重要性）→ <b>回到開頭的 KV 開熱圖對答案</b> → <b>前測五問、限制</b> → <b>小測驗</b> → 回顧。</p>
+  <p><b>Wiki 與簡報的對應：</b>每一張投影片底部都有「本頁根據」，直接連到它用到的 Wiki 頁；這個對應也寫在 <a href="slides/outline.json">outline.json</a>，並由檢查腳本驗證。</p>
+</section>
+
+<section id="graph">
+  <h2><span class="n">4</span>Loop / Graph 設計</h2>
+  <div class="graph">
+  <svg viewBox="0 0 900 430" width="100%" style="min-width:760px;font-family:inherit" role="img" aria-label="工作流程圖">
+    <defs>
+      <marker id="ar" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6B655E"/></marker>
+      <marker id="arr" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#E4572E"/></marker>
+    </defs>
+    <style>
+      .nd{fill:#FFFDF9;stroke:#1F4E5A;stroke-width:2}
+      .ck{fill:#FFF7E6;stroke:#E9B44C;stroke-width:2}
+      .t{font-size:14px;font-weight:800;fill:#1E1C1A}
+      .s{font-size:11.5px;fill:#6B655E}
+      .e{stroke:#6B655E;stroke-width:2;fill:none}
+      .f{stroke:#E4572E;stroke-width:2;fill:none;stroke-dasharray:6 4}
+      .ft{font-size:11.5px;fill:#E4572E;font-weight:700}
+    </style>
+    <!-- row 1 : build the wiki, loop per source -->
+    <text x="20" y="24" class="s" style="font-weight:700;fill:#1F4E5A">A. 建 Wiki（每篇來源跑一次，共 7 次）</text>
+    <rect x="20" y="40" width="120" height="58" rx="10" class="nd"/><text x="80" y="64" text-anchor="middle" class="t">① 討論</text><text x="80" y="84" text-anchor="middle" class="s">主題/讀者/範圍</text>
+    <rect x="180" y="40" width="120" height="58" rx="10" class="nd"/><text x="240" y="64" text-anchor="middle" class="t">② 取得資料</text><text x="240" y="84" text-anchor="middle" class="s">搜尋 → raw/S0x</text>
+    <rect x="340" y="40" width="120" height="58" rx="10" class="nd"/><text x="400" y="64" text-anchor="middle" class="t">③ Ingest</text><text x="400" y="84" text-anchor="middle" class="s">來源頁＋概念頁</text>
+    <rect x="500" y="40" width="130" height="58" rx="10" class="ck"/><text x="565" y="64" text-anchor="middle" class="t">④ Lint 檢查</text><text x="565" y="84" text-anchor="middle" class="s">來源標記/數字/連結</text>
+    <path d="M140 69H176" class="e" marker-end="url(#ar)"/>
+    <path d="M300 69H336" class="e" marker-end="url(#ar)"/>
+    <path d="M460 69H496" class="e" marker-end="url(#ar)"/>
+    <path d="M565 98V116H420V102" class="f" marker-end="url(#arr)"/><text x="500" y="134" text-anchor="middle" class="ft">沒過 → 改 wiki 頁</text>
+    <path d="M630 60H700V30H240V36" class="e" marker-end="url(#ar)"/><text x="470" y="24" class="s">還有下一篇 → 回到 ② 再跑一次</text>
+    <path d="M630 80H760V180" class="e" marker-end="url(#ar)"/><text x="768" y="140" class="s">7 篇都過</text>
+
+    <!-- row 2 : make the slides -->
+    <text x="20" y="176" class="s" style="font-weight:700;fill:#1F4E5A">B. 用 Wiki 生成簡報</text>
+    <rect x="700" y="184" width="130" height="58" rx="10" class="nd"/><text x="765" y="208" text-anchor="middle" class="t">⑤ 查詢 Wiki</text><text x="765" y="228" text-anchor="middle" class="s">寫 outline＋facts</text>
+    <rect x="530" y="184" width="130" height="58" rx="10" class="ck"/><text x="595" y="208" text-anchor="middle" class="t">⑥ 檢查大綱</text><text x="595" y="228" text-anchor="middle" class="s">先教再用/數字＋單位</text>
+    <rect x="360" y="184" width="130" height="58" rx="10" class="nd"/><text x="425" y="208" text-anchor="middle" class="t">⑦ 生成簡報</text><text x="425" y="228" text-anchor="middle" class="s">HTML＋本頁根據</text>
+    <rect x="190" y="184" width="130" height="58" rx="10" class="ck"/><text x="255" y="208" text-anchor="middle" class="t">⑧ 檢查簡報</text><text x="255" y="228" text-anchor="middle" class="s">對 wiki/對大綱</text>
+    <rect x="20" y="184" width="130" height="58" rx="10" class="ck"/><text x="85" y="208" text-anchor="middle" class="t">⑨ 視覺檢查</text><text x="85" y="228" text-anchor="middle" class="s">截圖 18 張</text>
+    <path d="M700 213H664" class="e" marker-end="url(#ar)"/>
+    <path d="M530 213H494" class="e" marker-end="url(#ar)"/>
+    <path d="M360 213H324" class="e" marker-end="url(#ar)"/>
+    <path d="M190 213H154" class="e" marker-end="url(#ar)"/>
+    <!-- fail loops -->
+    <path d="M595 242V272H765V246" class="f" marker-end="url(#arr)"/><text x="680" y="288" text-anchor="middle" class="ft">沒過 → 改大綱</text>
+    <path d="M595 184V160H380V102" class="f" marker-end="url(#arr)"/><text x="300" y="156" text-anchor="middle" class="ft">Wiki 沒寫到 → 回 ③ 補</text>
+    <path d="M255 242V272H425V246" class="f" marker-end="url(#arr)"/><text x="340" y="288" text-anchor="middle" class="ft">沒過 → 改 HTML</text>
+    <path d="M85 242V310H425V250" class="f" marker-end="url(#arr)"/><text x="250" y="326" text-anchor="middle" class="ft">版面/沒來源的說法 → 改 HTML</text>
+    <path d="M85 242V380H180" class="e" marker-end="url(#ar)"/>
+    <rect x="184" y="356" width="130" height="48" rx="24" fill="#1F4E5A"/><text x="249" y="385" text-anchor="middle" class="t" style="fill:#fff">⑩ 發布</text>
+    <text x="340" y="378" class="s">黃色＝檢查節點　實線＝通過　紅色虛線＝沒過、回到前面重做</text>
+    <text x="340" y="398" class="s">⑤⑥⑧ 的「facts / 數字＋單位」是第一次執行後新增的（v2）</text>
+  </svg>
+  </div>
+
+  <h3>文字版流程</h3>
+  <p>① 討論 → ② 取得資料 → ③ Ingest → ④ Lint →（7 篇都過）→ ⑤ 查詢 Wiki 寫大綱 → ⑥ 檢查大綱 → ⑦ 生成簡報 → ⑧ 檢查簡報 → ⑨ 視覺檢查 → ⑩ 發布。自動檢查可以一鍵跑：<code>python3 tools/run_pipeline.py</code>。</p>
+
+  <table>
+    <tr><th>節點</th><th>做什麼</th><th>檢查什麼</th><th>沒過回到</th></tr>
+    <tr><td>④ Lint</td><td><code>lint_wiki.py</code></td><td>每條重點都有〔S0x〕、來源存在、死連結、孤兒頁、<b>wiki 裡的數字要能在 raw 找到</b>、概念頁有一句話解釋</td><td>③ 改 wiki</td></tr>
+    <tr><td>⑥ 檢查大綱</td><td><code>check_outline.py</code></td><td>引用的 wiki 頁存在、<b>名詞先教再用</b>、每個概念頁至少被一張用到、新名詞在 wiki 有解釋、<span class="v2">facts 連單位都在 wiki</span></td><td>⑤ 改大綱；wiki 沒寫到就回 ③</td></tr>
+    <tr><td>⑧ 檢查簡報</td><td><code>check_slides.py</code></td><td>張數、每張的 wiki 引用和大綱一致、畫面上的數字都在 wiki、<span class="v2">畫面上的數字都是大綱宣告過的</span>、連結不死</td><td>⑦ 改 HTML</td></tr>
+    <tr><td>⑨ 視覺檢查</td><td>截圖每一張</td><td>版面、看不見的字、<b>沒有來源的說法</b>（腳本抓不到的）</td><td>⑦ 改 HTML</td></tr>
+  </table>
+
+  <h3>哪些步驟會重複？</h3>
+  <ul>
+    <li><b>②→③→④ 每篇來源跑一次</b>，共 7 次：一次 ingest 一篇，讀完、更新概念頁、lint 過了才下一篇。這樣錯誤只會出在剛加的那一篇，好找。</li>
+    <li><b>每個檢查節點和前一個節點組成一個小 loop</b>：④↔③、⑥↔⑤、⑧↔⑦、⑨↔⑦，沒過就回去改，再檢查一次，直到通過。</li>
+    <li>Wiki 本身會一直長：之後要加新來源，只要從 ② 再跑一次，簡報從 ⑤ 重新生成。</li>
+  </ul>
+  <h3>為什麼這樣設計？</h3>
+  <ul>
+    <li><b>簡報只能從 Wiki 拿東西。</b>每張投影片都要在大綱裡寫出引用哪幾頁，檢查器就能對答案；AI 自己「補」的東西會在檢查時露出來。</li>
+    <li><b>越早抓越便宜。</b>在大綱（一行 JSON）改一個數字，比在排好版的 HTML 裡改便宜；所以第一次執行後，把數字檢查往前移到了 ⑥。</li>
+    <li><b>腳本管得到的交給腳本，管不到的留給眼睛。</b>數字、連結、名詞順序可以自動檢查；「這句話有沒有來源」「版面有沒有壞」要截圖看。</li>
+    <li><b>檢查器也要被檢查。</b>每個檢查器都用「故意埋錯」測一次，結果真的抓到兩個檢查器自己的漏洞（見下方紀錄）。</li>
+  </ul>
+</section>
+
+<section id="run">
+  <h2><span class="n">5</span>一次實際執行的檢查紀錄</h2>
+  <p>完整紀錄（含原始輸出）：<a href="docs/run-01.html">docs/run-01</a>。摘要：</p>
+  <table>
+    <tr><th>節點</th><th>第一次結果</th><th>處理</th></tr>
+    <tr><td>④ Lint</td><td>1 個問題：index 連到還沒建立的 log</td><td>補 log.md → 0</td></tr>
+    <tr><td>④ 測試 Lint</td><td>故意改錯數字，抓得到；但發現「36」會因為 raw 有「1363」而被當成存在</td><td>改成整個數字比對</td></tr>
+    <tr><td>⑥ 檢查大綱</td><td>遷移學習頁沒被任何投影片引用；而且「有沒有解釋」的檢查被一個連結文字騙過</td><td>修檢查器 → 第 10 張補引用 → 0</td></tr>
+    <tr><td>⑧ 檢查簡報</td><td><b>13 個問題</b>，11 個是誤報（章節編號、題號、虛構 KV 的價格）</td><td>標出不檢查區、第 18 張補引用 → 0</td></tr>
+    <tr><td>⑨ 視覺檢查</td><td>4 個問題，其中第 2 張有一句沒有來源的結論，三個腳本都沒抓到</td><td>暖身頁改成只發問</td></tr>
+    <tr><td>v2 重跑</td><td>⑧ 抓到第 16 張「不到 1 秒」是 AI 自己換算的</td><td>改成 Wiki 裡的「100 毫秒」→ 全部通過</td></tr>
+  </table>
+</section>
+
+<section id="reflection">
+  <h2><span class="n">6</span>反思</h2>
+  <h3>哪一個節點最常出錯？</h3>
+  <p><b>⑦ 生成簡報。</b>它一個節點就產生了 ⑧ 的 13 個警告（大部分是誤報，但要一個一個看）、⑨ 的 4 個問題、v2 又抓到 1 個。而且真正的錯都是同一種：AI 把 Wiki 改寫成口語的時候，會<b>自己多加一點東西</b>，例如把「100 毫秒」順手換算成「不到 1 秒」，或是在暖身頁先講「大部分人會先看到人臉」。這些話聽起來很合理，所以人很難發現。</p>
+  <h3>發現問題後，把檢查往前移到哪一步？</h3>
+  <p>把<b>數字檢查從 ⑧（HTML 生成之後）往前移到 ⑥（大綱階段）</b>。現在大綱裡每張投影片要先寫出 <code>facts</code>：這張會出現哪些數字、單位是什麼（例如「100 毫秒」）。⑥ 在還沒有任何 HTML 之前就確認這些 facts 連單位都在 Wiki 裡；⑧ 再確認畫面上沒有大綱以外的數字。另外把「暖身頁只能發問、不能先下結論」寫進 schema 的生成規則，從源頭擋掉沒來源的說法。</p>
+  <h3>有沒有因此修改 workflow / graph？為什麼？</h3>
+  <p>有，從 v1 改成 v2：大綱多了 <code>facts</code> 欄位，⑥ 多了 O6（數字＋單位），⑧ 多了 S5（不能出現沒宣告的數字），CLAUDE.md 加上暖身頁規則，graph 最後加了 ⑨ 視覺檢查。原因有三個：</p>
+  <ol>
+    <li><b>v1 的數字檢查不看單位</b>：「100 秒」和「100 毫秒」對它來說一樣。改到大綱階段後連單位一起比，實測可以在生成前就抓到「100 秒」。</li>
+    <li><b>越晚發現越貴</b>：在 HTML 裡改數字常常要連版面一起動；在大綱改只是一行。</li>
+    <li><b>有些錯腳本永遠抓不到</b>：第 2 張那句沒有來源的結論，三個腳本都放過了，是截圖看才發現。所以 graph 不能只有自動檢查，最後一定要留一個人眼的節點。</li>
+  </ol>
+  <blockquote>額外學到的：檢查器本身也會出錯。lint 的數字比對原本是子字串，「36」會因為「1363」而通過；大綱檢查原本把連結文字當成「有解釋」。如果沒有故意埋錯去測，這兩個漏洞會一直讓錯誤溜過去。</blockquote>
+  <h3>還沒解決的</h3>
+  <ul>
+    <li>數字檢查只確認 Wiki 裡「有這個數字＋單位」，不確認它講的是同一件事。</li>
+    <li>章節標籤被設成不檢查，剛好有一個事實（「7 篇」）放在標籤裡，是人工補引用的。</li>
+  </ul>
+</section>
+
+<footer>
+  檔案結構：<code>raw/</code> 原始資料筆記 ・ <code>wiki/</code> LLM Wiki ・ <code>slides/</code> 大綱與簡報 ・ <code>tools/</code> 檢查與建站腳本 ・ <code>docs/</code> 執行紀錄 ・ <code>CLAUDE.md</code> schema<br>
+  Wiki 的 raw 筆記只收錄論文摘要層級的重點（自己的話改寫）與出處連結。
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>操作紀錄 log</title>
+<style>
+body{font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;background:#F5F1EA;color:#1E1C1A;margin:0}
+.wrap{max-width:820px;margin:0 auto;padding:36px 28px 80px}
+nav{font-size:14px;margin-bottom:26px;display:flex;gap:16px;flex-wrap:wrap}
+nav a{color:#1F4E5A}
+h1{font-size:32px;line-height:1.3;border-bottom:3px solid #E4572E;padding-bottom:10px}
+h2{font-size:22px;margin-top:34px;color:#1F4E5A}
+p,li{font-size:17px;line-height:1.75}
+a{color:#1F4E5A}
+blockquote{margin:18px 0;padding:12px 18px;background:#FFF7E6;border-left:5px solid #E9B44C;border-radius:0 8px 8px 0}
+blockquote p{margin:0}
+code{background:#EEE7DC;padding:1px 5px;border-radius:4px}
+table{border-collapse:collapse;width:100%}th,td{border:1px solid #DDD5C9;padding:6px 10px;text-align:left}
+.tag{display:inline-block;font-size:12px;font-weight:700;background:#1F4E5A;color:#fff;border-radius:99px;padding:0 8px;margin:0 2px;text-decoration:none}
+</style></head><body><div class="wrap">
+<nav><a href="../index.html">← 作業首頁</a><a href="../wiki/index.html">Wiki 目錄</a>
+<a href="../slides/index.html">教學簡報</a><a href="../wiki/log.html">操作紀錄</a></nav>
+<h1>操作紀錄 log</h1>
+<p>格式：<code>## [日期] 操作 | 對象</code>，下面寫動到哪些頁。</p>
+<h2>[2026-11-23] discuss | 主題、讀者、來源範圍</h2>
+<ul>
+<li>結果寫在 <a href="discussion.html">discussion.md</a></li>
+</ul>
+<h2>[2026-11-23] ingest | S01 Itti, Koch &amp; Niebur 1998</h2>
+<ul>
+<li>新增 sources/S01；新增 concepts/visual-attention、saliency-map、saliency-prediction-models</li>
+</ul>
+<h2>[2026-11-23] ingest | S02 Judd et al. 2009</h2>
+<ul>
+<li>新增 sources/S02、concepts/center-bias；更新 visual-attention、saliency-map、saliency-prediction-models</li>
+</ul>
+<h2>[2026-11-23] ingest | S03 DeepGaze I / II</h2>
+<ul>
+<li>新增 sources/S03、concepts/transfer-learning；更新 center-bias、saliency-prediction-models</li>
+</ul>
+<h2>[2026-11-23] ingest | S04 Wedel &amp; Pieters 2000</h2>
+<ul>
+<li>新增 sources/S04、concepts/eye-tracking、ad-elements、attention-to-memory</li>
+</ul>
+<h2>[2026-11-23] ingest | S05 Pieters &amp; Wedel 2004</h2>
+<ul>
+<li>新增 sources/S05；更新 eye-tracking、ad-elements、attention-to-memory</li>
+</ul>
+<h2>[2026-11-23] ingest | S06 Pieters &amp; Wedel 2012 Ad Gist</h2>
+<ul>
+<li>新增 sources/S06、concepts/ad-gist</li>
+</ul>
+<h2>[2026-11-23] ingest | S07 Bylinskii et al. 2017</h2>
+<ul>
+<li>新增 sources/S07、concepts/visual-importance；更新 saliency-map</li>
+<li>新增 synthesis/kv-pretest-checklist、synthesis/limitations</li>
+</ul>
+<h2>[2026-11-23] lint | 第 1 次</h2>
+<ul>
+<li>1 個問題：index.md 連到還沒建立的 log.md（L3 死連結）→ 建立本檔</li>
+</ul>
+<h2>[2026-11-23] lint | 第 2 次</h2>
+<ul>
+<li>0 個問題；另外故意埋錯數字測試 lint，發現子字串比對的漏洞，改成整個數字比對</li>
+</ul>
+<h2>[2026-11-23] query | 「KV 視覺注意力入門」教學簡報</h2>
+<ul>
+<li>產生 slides/outline.json（18 張），check_outline 抓到遷移學習頁沒被引用 → 第 10 張補引用</li>
+<li>產生 slides/index.html，check_slides、視覺檢查的問題與修正見 docs/run-01.md</li>
+</ul>
+<h2>[2026-11-23] schema | workflow v2</h2>
+<ul>
+<li>outline 新增 facts（數字＋單位），數字檢查往前移到 outline 階段；暖身頁只能發問</li>
+</ul></div></body></html>

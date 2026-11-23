@@ -1,0 +1,38 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>中央偏誤 Center Bias</title>
+<style>
+body{font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;background:#F5F1EA;color:#1E1C1A;margin:0}
+.wrap{max-width:820px;margin:0 auto;padding:36px 28px 80px}
+nav{font-size:14px;margin-bottom:26px;display:flex;gap:16px;flex-wrap:wrap}
+nav a{color:#1F4E5A}
+h1{font-size:32px;line-height:1.3;border-bottom:3px solid #E4572E;padding-bottom:10px}
+h2{font-size:22px;margin-top:34px;color:#1F4E5A}
+p,li{font-size:17px;line-height:1.75}
+a{color:#1F4E5A}
+blockquote{margin:18px 0;padding:12px 18px;background:#FFF7E6;border-left:5px solid #E9B44C;border-radius:0 8px 8px 0}
+blockquote p{margin:0}
+code{background:#EEE7DC;padding:1px 5px;border-radius:4px}
+table{border-collapse:collapse;width:100%}th,td{border:1px solid #DDD5C9;padding:6px 10px;text-align:left}
+.tag{display:inline-block;font-size:12px;font-weight:700;background:#1F4E5A;color:#fff;border-radius:99px;padding:0 8px;margin:0 2px;text-decoration:none}
+</style></head><body><div class="wrap">
+<nav><a href="../../index.html">← 作業首頁</a><a href="../../wiki/index.html">Wiki 目錄</a>
+<a href="../../slides/index.html">教學簡報</a><a href="../../wiki/log.html">操作紀錄</a></nav>
+<h1>中央偏誤 Center Bias</h1>
+<blockquote>
+<p>一句話：不管圖片內容是什麼，人看圖時都比較常看向畫面中央。</p>
+</blockquote>
+<h2>重點</h2>
+<ul>
+<li>Judd 等人把「距離畫面中心多遠」直接當成預測特徵，因為它和人實際看哪裡有關<a class="tag" href="../../wiki/sources/S02.html">S02</a></li>
+<li>評估模型時，AUC 會把中央偏誤算進去，shuffled AUC 則把它扣掉，用來看模型是否真的看懂內容<a class="tag" href="../../wiki/sources/S03.html">S03</a></li>
+<li>所以同一個模型會有兩個分數，例如 DeepGaze II 的 AUC 88%、sAUC 77%<a class="tag" href="../../wiki/sources/S03.html">S03</a></li>
+</ul>
+<h2>對 KV 的意思</h2>
+<ul>
+<li>放在中央的元素「本來就」比較會被看，前測時不要把這個功勞全算給創意<a class="tag" href="../../wiki/sources/S02.html">S02</a><a class="tag" href="../../wiki/sources/S03.html">S03</a></li>
+</ul>
+<h2>相關頁面</h2>
+<ul>
+<li><a href="saliency-prediction-models.html">顯著性模型演進</a></li>
+<li><a href="eye-tracking.html">眼動追蹤</a></li>
+</ul></div></body></html>
